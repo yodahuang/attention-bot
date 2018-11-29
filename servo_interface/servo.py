@@ -1,5 +1,7 @@
-import wiringpi
 import argparse
+
+import wiringpi
+
 
 class Servo:
     def __init__(self):
@@ -15,6 +17,7 @@ class Servo:
         assert angle >=0 and angle <= 180
         pwm_value = int(191 / 180 * angle + 50)
         wiringpi.pwmWrite(1, pwm_value)
+
 
 def main():
 

@@ -238,7 +238,7 @@ def get_assistant():
     device_config = os.path.join(
                   click.get_app_dir('googlesamples-assistant'),
                   'device_config.json')
-    lang =  'en-US'
+    lang = 'en-US'
     display = False
     verbose = False
     audio_sample_rate = audio_helpers.DEFAULT_AUDIO_SAMPLE_RATE
@@ -247,7 +247,6 @@ def get_assistant():
     audio_block_size = audio_helpers.DEFAULT_AUDIO_DEVICE_BLOCK_SIZE
     audio_flush_size = audio_helpers.DEFAULT_AUDIO_DEVICE_FLUSH_SIZE
     grpc_deadline = DEFAULT_GRPC_DEADLINE
-    once = False
     # Setup logging.
     logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
 
@@ -364,6 +363,7 @@ def get_assistant():
                          conversation_stream, display,
                          grpc_channel, grpc_deadline,
                          device_handler)
+
 
 def main():
     with get_assistant() as assistant:
