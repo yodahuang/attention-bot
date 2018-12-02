@@ -5,9 +5,9 @@ import click
 from servo_interface.servo import Servo
 from zeromessage import EnvelopSocket
 
-STEADY_TOL = 0.05
+STEADY_TOL = 0.15
 SERVO_STEP_SIZE = 2
-TIMEOUT = 500  # ms
+TIMEOUT = 1.0  # s
 
 
 class ServoManager:
@@ -16,23 +16,24 @@ class ServoManager:
         self.servo.go(90)
         self.current_angle = 90
         self.last_received_time = None
-        self.human_is_on_right = True
+        self.human_is_on_right = False
 
     @asyncio.coroutine
     def search_dog(self):
         while True:
+            print(self.last_received_time, time.time())
             if self.last_received_time is None or (time.time() - self.last_received_time > TIMEOUT):
-                print('Trigger searching mode')
+                print('Go search')
                 prev_angle = self.current_angle
                 if self.human_is_on_right:
-                    self.current_angle += SERVO_STEP_SIZE
-                else:
                     self.current_angle -= SERVO_STEP_SIZE
+                else:
+                    self.current_angle += SERVO_STEP_SIZE
                 if (self.current_angle > 180 or self.current_angle < 0):
                     self.human_is_on_right = not self.human_is_on_right
                     self.current_angle = prev_angle
                 self.servo.go(self.current_angle)
-                yield from asyncio.sleep(0.1)
+            yield from asyncio.sleep(0.1)
 
     def posHandler(self, position):
         if abs(position - 0.5) < STEADY_TOL:
@@ -48,6 +49,7 @@ class ServoManager:
 
     def register(self, socket):
         subscribe_coroutine = socket.subscribe('head/position', self.posHandler)
+        # return subscribe_coroutine()
         return asyncio.gather(subscribe_coroutine(), self.search_dog())
 
 

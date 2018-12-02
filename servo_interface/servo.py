@@ -14,7 +14,10 @@ class Servo:
         wiringpi.pwmSetRange(2000)
 
     def go(self, angle):
-        assert angle >=0 and angle <= 180
+        if angle < 0:
+            angle = 0
+        if angle > 180:
+            angle = 180
         pwm_value = int(191 / 180 * angle + 50)
         wiringpi.pwmWrite(1, pwm_value)
 
